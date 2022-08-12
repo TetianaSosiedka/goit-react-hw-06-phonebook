@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 import { Container } from './App.styled';
 
@@ -12,7 +13,7 @@ export const App = () => {
   const [contacts, setContacts] = useState(() => {
     return JSON.parse(localStorage.getItem('contakts-key')) ?? [];
   });
-  const [filter, setFilter] = useState('');
+  const filter = useSelector(state => state.filter.value);
 
   useEffect(() => {
     localStorage.setItem('contakts-key', JSON.stringify(contacts));
@@ -39,10 +40,6 @@ export const App = () => {
     });
   };
 
-  const handleChangeFilter = event => {
-    setFilter(event.target.value);
-  };
-
   const handleVisiblyContacts = () => {
     const normalizeFilter = filter.trim().toLowerCase();
     const visiblyContacts = contacts.filter(contact =>
@@ -67,7 +64,7 @@ export const App = () => {
       <h2>Contacts</h2>
       {contacts.length ? (
         <>
-          <Filter onChangeFilter={handleChangeFilter} value={filter} />
+          <Filter />
           <ContactList
             dates={handleVisiblyContacts()}
             onDeleteContact={hendleDeleteContact}

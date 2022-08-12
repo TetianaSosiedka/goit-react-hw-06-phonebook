@@ -1,21 +1,25 @@
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { Input } from './Filter.styled';
+import { setFilter } from 'redux/filterSlice';
 
-const Filter = ({ onChangeFilter, value }) => {
+const Filter = () => {
+  const value = useSelector(state => state.filter.value);
+  const dispatch = useDispatch();
+
+  const handleChangeFilter = event => {
+    dispatch(setFilter(event.target.value));
+  };
+
   return (
     <Input
-      onChange={onChangeFilter}
+      onChange={handleChangeFilter}
       type="text"
       name="filter"
       value={value}
       placeholder="Filter"
     ></Input>
   );
-};
-Filter.prototype = {
-  onChangeFilter: PropTypes.func.isRequired,
-  value: PropTypes.string,
 };
 
 export default Filter;
