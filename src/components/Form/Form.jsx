@@ -1,15 +1,22 @@
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { nanoid } from 'nanoid';
+import Notiflix from 'notiflix';
 
 import { Form } from './Filter.styled';
 
 import useGetContact from '../../hooks/useGetContact';
 
 import Button from '@mui/material/Button';
+
+import { addItems } from 'redux/contactsSlice';
 //-----------------------------------------------------
 
-const NewContactForm = ({ onSubmit }) => {
+const NewContactForm = () => {
+  const dispatch = useDispatch();
+
+  const items = useSelector(state => state.contacts.items);
+
   const { name, number, setState } = useGetContact();
 
   const idInputName = nanoid();
@@ -19,11 +26,32 @@ const NewContactForm = ({ onSubmit }) => {
     setState(event.target.name, event.target.value);
   };
 
+  const addDateForm = contact => {
+    const incontacts = items.find(item => item.name === contact.name);
+    if (incontacts) {
+      Notiflix.Report.warning(
+        'Warning',
+        `${contact.name} is alredy incontacts`,
+        'Cancel',
+        function cb() {
+          // callback
+        }
+      );
+      return;
+    }
+    Notiflix.Report.success('Success', 'Contact added', 'Ok', function cb() {
+      // callback
+    });
+
+    dispatch(addItems(contact));
+  };
+
   const handleSubmit = event => {
     event.preventDefault();
 
     const id = nanoid();
-    onSubmit({ name, number, id });
+
+    addDateForm({ name, number, id });
 
     setState();
   };
@@ -63,10 +91,6 @@ const NewContactForm = ({ onSubmit }) => {
       </Button>
     </Form>
   );
-};
-
-NewContactForm.prototype = {
-  onSubmit: PropTypes.func.isRequired,
 };
 
 export default NewContactForm;

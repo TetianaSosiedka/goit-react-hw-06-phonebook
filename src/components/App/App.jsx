@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Container } from './App.styled';
@@ -7,68 +7,27 @@ import NewContactForm from '../Form';
 import Filter from '../Filter/Filter';
 import ContactList from '../ContactsList/ContactsList';
 
-import Notiflix from 'notiflix';
-
 export const App = () => {
-  const [contacts, setContacts] = useState(() => {
-    return JSON.parse(localStorage.getItem('contakts-key')) ?? [];
-  });
-  const filter = useSelector(state => state.filter.value);
+  // const [items, setContacts] = useState(() => {
+  //   return JSON.parse(localStorage.getItem('contakts-key')) ?? [];
+  // });
+
+  const items = useSelector(state => state.contacts.items);
 
   useEffect(() => {
-    localStorage.setItem('contakts-key', JSON.stringify(contacts));
-  }, [contacts]);
-
-  const addDateForm = contact => {
-    const incontacts = contacts.find(item => item.name === contact.name);
-    if (incontacts) {
-      Notiflix.Report.warning(
-        'Warning',
-        `${contact.name} is alredy incontacts`,
-        'Cancel',
-        function cb() {
-          // callback
-        }
-      );
-      return;
-    }
-    Notiflix.Report.success('Success', 'Contact added', 'Ok', function cb() {
-      // callback
-    });
-    setContacts(prevState => {
-      return [...prevState, contact];
-    });
-  };
-
-  const handleVisiblyContacts = () => {
-    const normalizeFilter = filter.trim().toLowerCase();
-    const visiblyContacts = contacts.filter(contact =>
-      contact.name.toLowerCase().includes(normalizeFilter)
-    );
-    return visiblyContacts;
-  };
-
-  const hendleDeleteContact = event => {
-    setContacts(contacts.filter(item => item.id !== event.target.id));
-
-    Notiflix.Report.success('Success', 'Contact deleted', 'Ok', function cb() {
-      // callback
-    });
-  };
+    localStorage.setItem('contakts-key', JSON.stringify(items));
+  }, [items]);
 
   return (
     <Container>
       <h2>Phonebook</h2>
-      <NewContactForm onSubmit={addDateForm} />
+      <NewContactForm />
 
       <h2>Contacts</h2>
-      {contacts.length ? (
+      {items.length !== 0 ? (
         <>
           <Filter />
-          <ContactList
-            dates={handleVisiblyContacts()}
-            onDeleteContact={hendleDeleteContact}
-          />
+          <ContactList />
         </>
       ) : (
         <p>You have no contacts</p>
